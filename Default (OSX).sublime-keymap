@@ -1,0 +1,4 @@
+[
+	{"keys": ["super+shift+c"], "command": "shell_input"},
+	{"keys": ["shift+super+alt+c"], "command": "launch_shell"}
+]
