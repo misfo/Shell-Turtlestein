@@ -1,0 +1,4 @@
+{
+	"terminal_cmd": ["cmd.exe"],
+	"input_syntax_file": "Packages/Batch File/Batch File.tmLanguage"
+}
