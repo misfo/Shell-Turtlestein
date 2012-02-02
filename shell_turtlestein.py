@@ -23,7 +23,6 @@ def exec_args(cmd):
 
 def exec_cmd(window, cwd, cmd):
     config = exec_args(cmd) or {}
-    print "config", config
     config.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
     window.run_command("exec", config)
 
@@ -35,7 +34,9 @@ class ShellInputCommand(sublime_plugin.WindowCommand):
             view = self.window.show_input_panel(cwd + " $", "",
                                                 on_done, None, None)
             view.set_syntax_file(settings().get('input_syntax_file'))
-            view.settings().set('gutter', False)
+            view_settings = settings().get('input_view_settings')
+            for (setting, value) in view_settings.iteritems():
+                view.settings().set(setting, value)
 
 class LaunchShellCommand(sublime_plugin.WindowCommand):
     def run(self):

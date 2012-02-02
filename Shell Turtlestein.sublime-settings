@@ -6,10 +6,9 @@
 				"file_regex": "^\\s+\\[?([\\w/.]+?):([0-9]+)"
 			}
 		}
-		// ,
-		// {
-		// 	"cmd_regex": "^git",
-		// 	"file_regex": "^\\s+\\[?([\\w/.]+?):([0-9]+)"
-		// }
-	]
+	],
+	"input_view_settings": {
+		"auto_complete": false,
+		"gutter": false
+	}
 }
