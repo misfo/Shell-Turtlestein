@@ -13,29 +13,25 @@ def cwd_for_window(window):
 def settings():
 	return sublime.load_settings('Shell Turtlestein.sublime-settings')
 
-def exec_config(cmd):
+def exec_args(cmd):
 	try:
-		return (c for c
-			    in settings().get('exec_configs')
-			    if re.search(c.pop('cmd_regex'), cmd)).next()
+		return (c['exec_args'] for c
+			    in settings().get('cmd_config')
+			    if re.search(c['cmd_regex'], cmd)).next()
 	except StopIteration:
 		return None
 
-def exec_cmd(window, cmd, **kwargs):
-	config = exec_config(cmd) or {}
+def exec_cmd(window, cwd, cmd):
+	config = exec_args(cmd) or {}
 	print "config", config
-	config.update(kwargs)
-	config.update({'cmd': cmd})
+	config.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
 	window.run_command("exec", config)
 
 class ShellInputCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		cwd = cwd_for_window(self.window)
 		if cwd:
-			on_done = partial(exec_cmd,
-							  self.window,
-							  working_dir=cwd,
-							  shell=True)
+			on_done = partial(exec_cmd, self.window, cwd)
 			view = self.window.show_input_panel(cwd + " $", "",
 												on_done, None, None)
 			view.set_syntax_file(settings().get('input_syntax_file'))

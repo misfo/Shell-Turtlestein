@@ -1,8 +1,10 @@
 {
-	"exec_configs": [
+	"cmd_config": [
 		{
 			"cmd_regex": "^(bundle\\s+exec\\s+)?rake\\s+test",
-			"file_regex": "^\\s+\\[?([\\w/.]+?):([0-9]+)"
+			"exec_args": {
+				"file_regex": "^\\s+\\[?([\\w/.]+?):([0-9]+)"
+			}
 		}
 		// ,
 		// {
