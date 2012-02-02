@@ -1,4 +1,4 @@
-import re, subprocess
+import os.path, re, subprocess
 import sublime, sublime_plugin
 from functools import partial
 
@@ -7,8 +7,14 @@ def cwd_for_window(window):
     if len(folders) == 1:
         return folders[0]
     else:
-        sublime.status_message("There must be one folder open in the window")
-        return None
+        active_view = window.active_view()
+        active_file_name = active_view.file_name() if active_view else None
+        if not active_file_name:
+            return folders[0] if len(folders) else os.path.expanduser("~")
+        for folder in folders:
+            if active_file_name.startswith(folder):
+                return folder
+        return os.path.dirname(active_file_name)
 
 def settings():
     return sublime.load_settings('Shell Turtlestein.sublime-settings')
@@ -29,17 +35,15 @@ def exec_cmd(window, cwd, cmd):
 class ShellInputCommand(sublime_plugin.WindowCommand):
     def run(self):
         cwd = cwd_for_window(self.window)
-        if cwd:
-            on_done = partial(exec_cmd, self.window, cwd)
-            view = self.window.show_input_panel(cwd + " $", "",
-                                                on_done, None, None)
-            view.set_syntax_file(settings().get('input_syntax_file'))
-            view_settings = settings().get('input_view_settings')
-            for (setting, value) in view_settings.iteritems():
-                view.settings().set(setting, value)
+        on_done = partial(exec_cmd, self.window, cwd)
+        view = self.window.show_input_panel(cwd + " $", "",
+                                            on_done, None, None)
+        view.set_syntax_file(settings().get('input_syntax_file'))
+        view_settings = settings().get('input_view_settings')
+        for (setting, value) in view_settings.iteritems():
+            view.settings().set(setting, value)
 
 class LaunchShellCommand(sublime_plugin.WindowCommand):
     def run(self):
         cwd = cwd_for_window(self.window)
-        if cwd:
-            subprocess.Popen(settings().get('terminal_cmd'), cwd=cwd)
+        subprocess.Popen(settings().get('terminal_cmd'), cwd=cwd)
