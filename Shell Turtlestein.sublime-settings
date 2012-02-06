@@ -1,7 +1,7 @@
 {
 	"cmd_config": [],
-	"input_view_settings": {
-		"auto_complete": false,
-		"gutter": false
+	"input_widget": {
+		// overridden for silly non-unixy OSes
+		"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
 	}
 }

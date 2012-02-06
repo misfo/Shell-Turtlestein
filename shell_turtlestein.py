@@ -48,9 +48,7 @@ class ShellInputCommand(sublime_plugin.WindowCommand):
         on_done = partial(exec_cmd, self.window, cwd)
         view = self.window.show_input_panel(cwd + " $", "",
                                             on_done, None, None)
-        view.set_syntax_file(settings().get('input_syntax_file'))
-        view_settings = settings().get('input_view_settings')
-        for (setting, value) in view_settings.iteritems():
+        for (setting, value) in settings().get('input_widget').iteritems():
             view.settings().set(setting, value)
 
 class LaunchShellCommand(sublime_plugin.WindowCommand):

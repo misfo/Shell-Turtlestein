@@ -6,6 +6,5 @@
 		"-e", "tell application \"System Events\" to tell process \"Terminal\" to keystroke \"t\" using command down"
 		// ,
 		// "-e", "tell applicataion \"Terminal\" do script with command \"cd $PWD; $*\" in window 1"
-	],
-	"input_syntax_file": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
+	]
 }
