@@ -30,6 +30,9 @@ def settings():
     return sublime.load_settings('Shell Turtlestein.sublime-settings')
 
 def exec_args(cmd):
+    """
+    Return the 'exec_args' value for the first 'cmd_regex' matching the cmd.
+    """
     try:
         return (c['exec_args'] for c
                 in settings().get('cmd_config')
@@ -42,7 +45,10 @@ def exec_cmd(window, cwd, cmd):
     config.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
     window.run_command("exec", config)
 
-class ShellInputCommand(sublime_plugin.WindowCommand):
+class ShellPromptCommand(sublime_plugin.WindowCommand):
+    """
+    Prompt the user for a shell command to run the the window's directory
+    """
     def run(self):
         cwd = cwd_for_window(self.window)
         on_done = partial(exec_cmd, self.window, cwd)
@@ -51,7 +57,10 @@ class ShellInputCommand(sublime_plugin.WindowCommand):
         for (setting, value) in settings().get('input_widget').iteritems():
             view.settings().set(setting, value)
 
-class LaunchShellCommand(sublime_plugin.WindowCommand):
+class LaunchTerminalCommand(sublime_plugin.WindowCommand):
+    """
+    Launch a terminal using the window's working directory
+    """
     def run(self):
         cwd = cwd_for_window(self.window)
         subprocess.Popen(settings().get('terminal_cmd'), cwd=cwd)

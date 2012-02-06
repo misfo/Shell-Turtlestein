@@ -1,4 +1,4 @@
 [
-	{"keys": ["ctrl+shift+c"], "command": "shell_input"},
-	{"keys": ["shift+ctrl+alt+c"], "command": "launch_shell"}
+	{"keys": ["ctrl+shift+c"], "command": "shell_prompt"},
+	{"keys": ["shift+ctrl+alt+c"], "command": "launch_terminal"}
 ]
