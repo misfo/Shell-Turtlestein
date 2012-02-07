@@ -51,8 +51,10 @@ override the following settings:
 PAQ
 ---
 Q: Who the balls is Shell Turtlestein?
+
 A: He was a pet turtle that died in some episode of Modern Family.  That's about
    as high-brow as my references get.  R.I.P. Shell :(
 
 Q: What does "PAQ" stand for?
+
 A: Possibly asked questions
