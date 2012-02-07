@@ -6,11 +6,11 @@ A quick and simple way to run arbitrary shell commands in Sublime Text 2.
 Mr. Turtlestein acts as a more flexible alternative to Sublime's build systems.
 Commands run in your project's directory:
 
-![input image]()
+![input a shell command](https://img.skitch.com/20120207-m5g6dkrbhj2ed9pt9wn42rg7yc.jpg)
 
 And display their output just like Sublime's build systems:
 
-![output image]()
+![command output](https://img.skitch.com/20120207-e4wwrfr7s8tyds7rptfesxi65p.jpg)
 
 Snippets are available for frequently used commands.  All snippets with the
 scope name `source.shell` (`source.dosbatch` for Windows users) can be used in
