@@ -63,4 +63,14 @@ class LaunchTerminalCommand(sublime_plugin.WindowCommand):
     """
     def run(self):
         cwd = cwd_for_window(self.window)
-        subprocess.Popen(settings().get('terminal_cmd'), cwd=cwd, shell=True)
+        cmd = settings().get('terminal_cmd')
+        proc = subprocess.Popen(cmd, cwd=cwd,
+                                     shell=True,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.STDOUT)
+        output, _ = proc.communicate()
+        return_code = proc.poll()
+        if return_code:
+            sublime.error_message("The following command exited with status "
+                                  + "code " + str(return_code) + ":\n" + cmd
+                                  + "\n\nOutput:\n" + output)
