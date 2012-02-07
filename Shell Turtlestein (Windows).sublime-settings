@@ -1,5 +1,5 @@
 {
-	"terminal_cmd": ["cmd.exe"],
+	"terminal_cmd": "cmd.exe",
 	"input_widget": {
 		"syntax": "Packages/Batch File/Batch File.tmLanguage"
 	}

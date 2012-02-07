@@ -63,4 +63,4 @@ class LaunchTerminalCommand(sublime_plugin.WindowCommand):
     """
     def run(self):
         cwd = cwd_for_window(self.window)
-        subprocess.Popen(settings().get('terminal_cmd'), cwd=cwd)
+        subprocess.Popen(settings().get('terminal_cmd'), cwd=cwd, shell=True)

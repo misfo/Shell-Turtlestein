@@ -1,10 +1,8 @@
 {
-	"terminal_cmd": [
-		// adapted from http://tomafro.net/2009/08/tip-open-new-tab-in-osx-terminal
-		"osascript",
-		"-e", "tell application \"Terminal\" to activate",
-		"-e", "tell application \"System Events\" to tell process \"Terminal\" to keystroke \"t\" using command down"
-		// ,
-		// "-e", "tell applicataion \"Terminal\" do script with command \"cd $PWD; $*\" in window 1"
-	]
+	// This AppleScript requires the access for assistive
+	// devices to be turned on in the Universal Access system
+	// preferences. Using Cmd-T keystroke instead (which
+	// doesn't require the above setting) does not work if keys
+	// are still held down from the Sublime Text keybinding.
+	"terminal_cmd": "osascript -e 'tell application \"Terminal\"' -e 'activate' -e 'tell application \"System Events\" to click menu item \"Basic\" of ((process \"Terminal\")'\\''s (menu bar 1)'\\''s (menu bar item \"Shell\")'\\''s (menu \"Shell\")'\\''s (menu item \"New Tab\")'\\''s (menu \"New Tab\"))' -e \"do script with command \\\"cd '$PWD' && clear\\\" in window 1\" -e 'end tell'"
 }
