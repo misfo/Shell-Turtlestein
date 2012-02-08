@@ -40,12 +40,6 @@ override the following settings:
   	  [options that are available to build systems](http://sublimetext.info/docs/en/reference/build_systems.html)
   	  are available here, but `file_regex`, `line_regex`, `encoding`, `env`, and
   	  `path` are the only options that make sense to use with this plugin.
-  * `terminal_cmd`: The shell command used to launch a terminal. If you're
-    sharing your setup between multiple machines
-    [like me](https://github.com/misfo/Sublime-Packages), make sure to put this
-    setting in an OS-specific settings file (e.g.
-    `Packages/User/Shell Turtlestein (OSX).sublime-settings` for OS X) so that
-    it won't be used on other OSes.
 
 
 PAQ

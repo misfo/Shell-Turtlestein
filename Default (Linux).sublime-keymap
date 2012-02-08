@@ -1,4 +1,7 @@
 [
 	{"keys": ["ctrl+shift+c"], "command": "shell_prompt"},
-	{"keys": ["shift+ctrl+alt+c"], "command": "launch_terminal"}
+	{"keys": ["shift+ctrl+alt+c"], "command": "subprocess_in_cwd", "args": {
+		// untested.  Patches welcome :)
+		"cmd": ["gnome-terminal",  "--tab"]
+	} }
 ]

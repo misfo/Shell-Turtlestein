@@ -1,4 +1,6 @@
 [
 	{"keys": ["ctrl+shift+c"], "command": "shell_prompt"},
-	{"keys": ["shift+ctrl+alt+c"], "command": "launch_terminal"}
+	{"keys": ["shift+ctrl+alt+c"], "command": "subprocess_in_cwd", "args": {
+		"cmd": ["cmd.exe"]
+	} }
 ]

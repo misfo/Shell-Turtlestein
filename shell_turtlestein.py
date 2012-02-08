@@ -57,20 +57,23 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
         for (setting, value) in settings().get('input_widget').iteritems():
             view.settings().set(setting, value)
 
-class LaunchTerminalCommand(sublime_plugin.WindowCommand):
+class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
     """
     Launch a terminal using the window's working directory
     """
-    def run(self):
+    def run(self, cmd = None, wait = False):
         cwd = cwd_for_window(self.window)
-        cmd = settings().get('terminal_cmd')
-        proc = subprocess.Popen(cmd, cwd=cwd,
-                                     shell=True,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.STDOUT)
-        output, _ = proc.communicate()
-        return_code = proc.poll()
-        if return_code:
-            sublime.error_message("The following command exited with status "
-                                  + "code " + str(return_code) + ":\n" + cmd
-                                  + "\n\nOutput:\n" + output)
+        shell = isinstance(cmd, basestring)
+        if wait:
+            proc = subprocess.Popen(cmd, cwd=cwd,
+                                         shell=shell,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.STDOUT)
+            output, _ = proc.communicate()
+            return_code = proc.poll()
+            if return_code:
+                sublime.error_message("The following command exited with status "
+                                      + "code " + str(return_code) + ":\n" + cmd
+                                      + "\n\nOutput:\n" + output)
+        else:
+            subprocess.Popen(cmd, cwd=cwd, shell=shell)
