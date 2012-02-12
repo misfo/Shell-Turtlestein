@@ -59,7 +59,7 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
 
 class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
     """
-    Launch a terminal using the window's working directory
+    Launch a suprocess using the window's working directory
     """
     def run(self, cmd = None, wait = False):
         cwd = cwd_for_window(self.window)
