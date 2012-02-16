@@ -44,6 +44,8 @@ def exec_args(cmd):
     return args
 
 def exec_cmd(window, cwd, cmd):
+    if settings().get('cmd_append'):
+        cmd = settings().get('cmd_append') + " && " + cmd
     args = exec_args(cmd)
     args.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
     window.run_command("exec", args)
