@@ -33,17 +33,20 @@ def exec_args(cmd):
     """
     Return the 'exec_args' value for the first 'cmd_regex' matching the cmd.
     """
+    args = settings().get('default_exec_args')
     try:
-        return (c['exec_args'] for c
-                in settings().get('cmd_config')
-                if re.search(c['cmd_regex'], cmd)).next()
+        args_for_cmd = (c['exec_args'] for c
+                        in settings().get('cmd_config')
+                        if re.search(c['cmd_regex'], cmd)).next()
+        args.update(args_for_cmd)
     except StopIteration:
-        return None
+        pass
+    return args
 
 def exec_cmd(window, cwd, cmd):
-    config = exec_args(cmd) or {}
-    config.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
-    window.run_command("exec", config)
+    args = exec_args(cmd)
+    args.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
+    window.run_command("exec", args)
 
 class ShellPromptCommand(sublime_plugin.WindowCommand):
     """
