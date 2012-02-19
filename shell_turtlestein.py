@@ -29,26 +29,32 @@ def cwd_for_window(window):
 def settings():
     return sublime.load_settings('Shell Turtlestein.sublime-settings')
 
-def exec_args(cmd):
+def cmd_settings(cmd):
     """
-    Return the 'exec_args' value for the first 'cmd_regex' matching the cmd.
+    Return the default settings with settings for the command merged in
     """
-    args = settings().get('default_exec_args')
+    d = {}
+    for setting in ['exec_args', 'surround_cmd']:
+        d[setting] = settings().get(setting)
     try:
-        args_for_cmd = (c['exec_args'] for c
-                        in settings().get('cmd_config')
-                        if re.search(c['cmd_regex'], cmd)).next()
-        args.update(args_for_cmd)
+        settings_for_cmd = (c for c
+                            in settings().get('cmd_settings')
+                            if re.search(c['cmd_regex'], cmd)).next()
+        d.update(settings_for_cmd)
     except StopIteration:
         pass
-    return args
+    return d
 
 def exec_cmd(window, cwd, cmd):
-    if settings().get('cmd_append'):
-        cmd = settings().get('cmd_append') + " && " + cmd
-    args = exec_args(cmd)
-    args.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
-    window.run_command("exec", args)
+    d = cmd_settings(cmd)
+
+    before, after = d['surround_cmd']
+    cmd = before + cmd + after
+
+    exec_args = d['exec_args']
+    exec_args.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
+
+    window.run_command("exec", exec_args)
 
 class ShellPromptCommand(sublime_plugin.WindowCommand):
     """

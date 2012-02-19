@@ -1,8 +1,9 @@
 {
 	// Override these in your own
 	// `Packages/User/Shell Turtlestein.sublime-commands` file.
-	"cmd_config": [],
-	"default_exec_args": {},
+	"surround_cmd": ["", ""],
+	"exec_args": {},
+	"cmd_settings": [],
 	"input_widget": {
 		// overridden for silly non-unixy OSes
 		"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"

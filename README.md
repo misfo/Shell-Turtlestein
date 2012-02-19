@@ -31,20 +31,22 @@ Optional Configuration
 In your own `Packages/User/Shell Turtlestein.sublime-commands` file you can
 override the following settings:
 
-  * `default_exec_args`: The arguments that will be passed to `ExecCommand`.
+  * `surround_cmd`: A two-element array that specifies text to append before and
+    after the command (e.g. `["source ~/.profile && ", ""]`).
+  * `exec_args`: The arguments that will be passed to `ExecCommand`.
     The same
     [options that are available to build systems](http://sublimetext.info/docs/en/reference/build_systems.html)
     are available here, but `file_regex`, `line_regex`, `encoding`, `env`, and
     `path` are the only options that make sense to use with this plugin.
-    Arguments specified in the `cmd_config` (see below) will override these
+    Arguments specified in the `cmd_settings` (see below) will override these
     defaults.
-  * `cmd_config`: An array of configurations to use for commands that are
+  * `cmd_settings`: An array of configurations to use for commands that are
   	executed.  The first configuration to match the command being run will be
   	used.  The keys that each configuration should have are:
   	* `cmd_regex`: A regex that must match the command for this configuration
   	  for this configuration to be used.
-  	* `exec_args`: The arguments from `default_exec_args` that should be
-      overridden for this command.
+  	* `exec_args` and `surround_cmd` override the settings described above for
+      any matching command.
 
 
 PAQ
