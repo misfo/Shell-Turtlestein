@@ -26,6 +26,16 @@ def cwd_for_window(window):
                 return folder
         return os.path.dirname(active_file_name)
 
+def abbreviate_user(path):
+    """
+    Return a path with the ~ dir abbreviated (i.e. the inverse of expanduser)
+    """
+    home_dir = os.path.expanduser("~")
+    if path.startswith(home_dir):
+        return "~" + path[len(home_dir):]
+    else:
+        return path
+
 def settings():
     return sublime.load_settings('Shell Turtlestein.sublime-settings')
 
@@ -63,7 +73,7 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
     def run(self):
         cwd = cwd_for_window(self.window)
         on_done = partial(exec_cmd, self.window, cwd)
-        view = self.window.show_input_panel(cwd + " $", "",
+        view = self.window.show_input_panel(abbreviate_user(cwd) + " $", "",
                                             on_done, None, None)
         for (setting, value) in settings().get('input_widget').iteritems():
             view.settings().set(setting, value)
