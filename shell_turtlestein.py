@@ -1,6 +1,7 @@
 import os.path, re, subprocess
 import sublime, sublime_plugin
 from functools import partial
+from sublime_readline import show_input_panel_with_readline
 
 def cwd_for_window(window):
     """
@@ -71,10 +72,14 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
     Prompt the user for a shell command to run the the window's directory
     """
     def run(self):
+        if not hasattr(self, 'cmd_history'):
+            self.cmd_history = []
         cwd = cwd_for_window(self.window)
         on_done = partial(exec_cmd, self.window, cwd)
-        view = self.window.show_input_panel(abbreviate_user(cwd) + " $", "",
-                                            on_done, None, None)
+        view = show_input_panel_with_readline(self.window,
+                                              abbreviate_user(cwd) + " $",
+                                              self.cmd_history,
+                                              on_done, None, None)
         for (setting, value) in settings().get('input_widget').iteritems():
             view.settings().set(setting, value)
 

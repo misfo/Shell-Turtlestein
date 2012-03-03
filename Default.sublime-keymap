@@ -1,0 +1,31 @@
+[
+	// GNU readline-like keybindings for the input widget
+	{"keys": ["up"], "command": "readline_history_change",
+		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": false}},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["down"], "command": "readline_history_change",
+		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": true}},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["shift+up"], "command": "readline_history_change",
+		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": false}},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["shift+down"], "command": "readline_history_change",
+		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": true}},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["ctrl+a"], "command": "move_to",
+		"args": {"to": "bol"},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["ctrl+e"], "command": "move_to",
+		"args": {"to": "eol"},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["ctrl+u"], "command": "run_macro_file",
+		"args": {"file": "Packages/Default/Delete to Hard BOL.sublime-macro"},
+		"context": [{"key": "setting.readline_input_widget"}]
+	}
+]
