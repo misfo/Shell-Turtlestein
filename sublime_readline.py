@@ -36,3 +36,9 @@ class ReadlineHistoryChange(sublime_plugin.TextCommand):
         self.view.run_command("move_to", {"to": "eol", "extend": False})
         global active_input_row
         active_input_row, _ = self.view.rowcol(self.view.sel()[0].b)
+
+class LeftDeleteOnLine(sublime_plugin.TextCommand):
+    def run(self, edit):
+        if self.view.rowcol(self.view.sel()[0].b)[1]:
+            # Don't left delete if the cursor is at the beginning of the line
+            self.view.run_command('left_delete')

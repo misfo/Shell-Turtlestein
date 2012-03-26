@@ -8,14 +8,6 @@
 		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": true}},
 		"context": [{"key": "setting.readline_input_widget"}]
 	},
-	{"keys": ["shift+up"], "command": "readline_history_change",
-		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": false}},
-		"context": [{"key": "setting.readline_input_widget"}]
-	},
-	{"keys": ["shift+down"], "command": "readline_history_change",
-		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": true}},
-		"context": [{"key": "setting.readline_input_widget"}]
-	},
 	{"keys": ["ctrl+a"], "command": "move_to",
 		"args": {"to": "bol"},
 		"context": [{"key": "setting.readline_input_widget"}]
@@ -27,5 +19,25 @@
 	{"keys": ["ctrl+u"], "command": "run_macro_file",
 		"args": {"file": "Packages/Default/Delete to Hard BOL.sublime-macro"},
 		"context": [{"key": "setting.readline_input_widget"}]
+	},
+
+
+	// The remaining keybindings are less to add functionality and more to
+	// prevent strange behavior that results from the input widget being a
+	// multi-line view.
+	{"keys": ["shift+up"], "command": "readline_history_change",
+		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": false}},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["shift+down"], "command": "readline_history_change",
+		"args": {"movement": "move", "movement_args": {"by": "lines", "forward": true}},
+		"context": [{"key": "setting.readline_input_widget"}]
+	},
+	{"keys": ["backspace"], "command": "left_delete_on_line",
+		"context": [
+			{ "key": "setting.readline_input_widget" },
+			{ "key": "num_selections", "operand": 1 },
+			{ "key": "selection_empty", "operator": "equal", "operand": true }
+		]
 	}
 ]
