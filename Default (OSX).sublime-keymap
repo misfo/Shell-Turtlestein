@@ -1,5 +1,6 @@
 [
 	{"keys": ["super+shift+c"], "command": "shell_prompt"},
+	{"keys": ["alt+shift+c"], "command": "shell_prompt_filter"},
 	{"keys": ["shift+super+alt+c"], "command": "subprocess_in_cwd", "args": {
 		// This AppleScript requires the access for assistive
 		// devices to be turned on in the Universal Access system

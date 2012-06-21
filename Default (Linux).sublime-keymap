@@ -1,5 +1,6 @@
 [
 	{"keys": ["ctrl+shift+c"], "command": "shell_prompt"},
+	{"keys": ["alt+shift+c"], "command": "shell_prompt_filter"},
 	{"keys": ["shift+ctrl+alt+c"], "command": "subprocess_in_cwd", "args": {
 		// untested.  Patches welcome :)
 		"cmd": ["gnome-terminal",  "--tab"]
