@@ -62,26 +62,37 @@ def cmd_settings(cmd):
 
 
 def exec_cmd(window, cwd, cmd):
-    d = cmd_settings(cmd)
+    m = re.match(r"(\s*\|\s*)?(.*?)(\s*>\s*)?$", cmd)
+    (pipe, shell_cmd, redirect) = m.groups()
+    if pipe and not redirect:
+        sublime.error_message("Build systems do not support input from STDIN")
+        return
+    d = cmd_settings(shell_cmd)
 
     before, after = d['surround_cmd']
-    cmd = before + cmd + after
+    shell_cmd = before + shell_cmd + after
 
-    exec_args = d['exec_args']
-    exec_args.update({'cmd': cmd, 'shell': True, 'working_dir': cwd})
+    if redirect:
+        view = window.active_view()
+        if not view:
+            sublime.error_message("No active view to redirect output to.")
+            return
 
-    window.run_command("exec", exec_args)
+        stdin = None
+        input_region = view.sel()[0]
+        if pipe:
+            stdin = view.substr(input_region)
 
+        (success, output) = run_cmd(cwd, shell_cmd, True, stdin)
+        if success:
+            edit = view.begin_edit()
+            view.replace(edit, input_region, output)
+            view.end_edit(edit)
+    else:
+        exec_args = d['exec_args']
+        exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
 
-def prompt_for_cmd(subcmd, window, cwd, on_done):
-    if not hasattr(subcmd, 'cmd_history'):
-        subcmd.cmd_history = []
-    readview = show_input_panel_with_readline(window,
-                                              abbreviate_user(cwd) + " $",
-                                              subcmd.cmd_history,
-                                              on_done, None, None)
-    for (setting, value) in settings().get('input_widget').iteritems():
-        readview.settings().set(setting, value)
+        window.run_command("exec", exec_args)
 
 
 # Run a command in the given directory, send input to the process. If
@@ -91,15 +102,15 @@ def prompt_for_cmd(subcmd, window, cwd, on_done):
 # process. If we weren't waiting or something went wrong, the first element
 # of the pair will be False. In the second case an error dialog will also
 # be displayed.
-def run_cmd(cwd, cmd, wait, input=""):
+def run_cmd(cwd, cmd, wait, stdin=None):
     shell = isinstance(cmd, basestring)
     if wait:
         proc = subprocess.Popen(cmd, cwd=cwd,
                                      shell=shell,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
-                                     stdin=subprocess.PIPE)
-        output, error = proc.communicate(input)
+                                     stdin=(subprocess.PIPE if stdin else None))
+        output, error = proc.communicate(stdin)
         return_code = proc.poll()
         if return_code:
             sublime.error_message("The following command exited with status "
@@ -119,10 +130,16 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
     Prompt the user for a shell command to run in the window's directory
     """
     def run(self):
-        window = self.window
-        cwd = cwd_for_window(window)
-        on_done = partial(exec_cmd, window, cwd)
-        prompt_for_cmd(self, window, cwd, on_done)
+        if not hasattr(self, 'cmd_history'):
+            self.cmd_history = []
+        cwd = cwd_for_window(self.window)
+        on_done = partial(exec_cmd, self.window, cwd)
+        inputview = show_input_panel_with_readline(self.window,
+                                                   abbreviate_user(cwd) + " $",
+                                                   self.cmd_history,
+                                                   on_done, None, None)
+        for (setting, value) in settings().get('input_widget').iteritems():
+            inputview.settings().set(setting, value)
 
 
 class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
@@ -132,25 +149,3 @@ class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
     def run(self, cmd=None, wait=False):
         cwd = cwd_for_window(self.window)
         run_cmd(cwd, cmd, wait)
-
-
-class ShellPromptFilterCommand(sublime_plugin.TextCommand):
-    """
-    Prompt the user for a shell command to run in the view's directory.
-    Pass the first selection as standard input to the command and replace
-    the selection with the command's standard output or an error message
-    if something went wrong
-    """
-    def run(self, edit):
-        window = self.view.window()
-        cwd = cwd_for_window(window)
-        on_done = partial(self.on_done, edit, cwd)
-        prompt_for_cmd(self, window, cwd, on_done)
-
-    def on_done(self, edit, cwd, cmd):
-        view = self.view
-        input_region = view.sel()[0]
-        input = view.substr(input_region)
-        (success, output) = run_cmd(cwd, cmd, True, input)
-        if success:
-            view.replace(edit, input_region, output)
