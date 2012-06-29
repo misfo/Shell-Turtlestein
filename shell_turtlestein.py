@@ -61,38 +61,11 @@ def cmd_settings(cmd):
     return d
 
 
-def exec_cmd(window, cwd, cmd):
-    m = re.match(r"(\s*\|\s*)?(.*?)(\s*>\s*)?$", cmd)
-    (pipe, shell_cmd, redirect) = m.groups()
-    if pipe and not redirect:
-        sublime.error_message("Build systems do not support input from STDIN")
-        return
-    d = cmd_settings(shell_cmd)
-
-    before, after = d['surround_cmd']
-    shell_cmd = before + shell_cmd + after
-
-    if redirect:
-        view = window.active_view()
-        if not view:
-            sublime.error_message("No active view to redirect output to.")
-            return
-
-        stdin = None
-        input_region = view.sel()[0]
-        if pipe:
-            stdin = view.substr(input_region)
-
-        (success, output) = run_cmd(cwd, shell_cmd, True, stdin)
-        if success:
-            edit = view.begin_edit()
-            view.replace(edit, input_region, output)
-            view.end_edit(edit)
-    else:
-        exec_args = d['exec_args']
-        exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
-
-        window.run_command("exec", exec_args)
+def parse_cmd(cmd_str):
+    return re.match(
+            r"(?P<pipe>\s*\|\s*)?(?P<shell_cmd>.*?)(?P<redirect>\s*>\s*)?$",
+            cmd_str
+        ).groupdict()
 
 
 # Run a command in the given directory, send input to the process. If
@@ -102,15 +75,15 @@ def exec_cmd(window, cwd, cmd):
 # process. If we weren't waiting or something went wrong, the first element
 # of the pair will be False. In the second case an error dialog will also
 # be displayed.
-def run_cmd(cwd, cmd, wait, stdin=None):
+def run_cmd(cwd, cmd, wait, input_str=None):
     shell = isinstance(cmd, basestring)
     if wait:
         proc = subprocess.Popen(cmd, cwd=cwd,
                                      shell=shell,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
-                                     stdin=(subprocess.PIPE if stdin else None))
-        output, error = proc.communicate(stdin)
+                                     stdin=(subprocess.PIPE if input_str else None))
+        output, error = proc.communicate(input_str)
         return_code = proc.poll()
         if return_code:
             sublime.error_message("The following command exited with status "
@@ -133,13 +106,51 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
         if not hasattr(self, 'cmd_history'):
             self.cmd_history = []
         cwd = cwd_for_window(self.window)
-        on_done = partial(exec_cmd, self.window, cwd)
+        on_done = partial(self.on_done, cwd)
         inputview = show_input_panel_with_readline(self.window,
                                                    abbreviate_user(cwd) + " $",
                                                    self.cmd_history,
                                                    on_done, None, None)
         for (setting, value) in settings().get('input_widget').iteritems():
             inputview.settings().set(setting, value)
+
+    def on_done(self, cwd, cmd_str):
+        cmd = parse_cmd(cmd_str)
+        if cmd['pipe'] and not cmd['redirect']:
+            sublime.error_message("Build systems do not support input from STDIN")
+            return
+        settings = cmd_settings(cmd['shell_cmd'])
+
+        before, after = settings['surround_cmd']
+        shell_cmd = before + cmd['shell_cmd'] + after
+
+        # We can leverage Sublime's (async) build systems unless we're
+        # redirecting the output into the view. In that case, we use Popen
+        # synchronously.
+        if cmd['redirect']:
+            view = self.window.active_view()
+            if not view:
+                sublime.error_message("No active view to redirect output to.")
+                return
+
+            for sel in view.sel():
+                self.process_selection(view, sel, cwd, shell_cmd, cmd['pipe'])
+        else:
+            exec_args = settings['exec_args']
+            exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
+
+            self.window.run_command("exec", exec_args)
+
+    def process_selection(self, view, selection, cwd, shell_cmd, pipe):
+        input_str = None
+        if pipe:
+            input_str = view.substr(selection)
+
+        (success, output) = run_cmd(cwd, shell_cmd, True, input_str)
+        if success:
+            edit = view.begin_edit()
+            view.replace(edit, selection, output)
+            view.end_edit(edit)
 
 
 class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
