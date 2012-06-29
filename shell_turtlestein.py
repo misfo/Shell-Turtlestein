@@ -3,6 +3,7 @@ import sublime, sublime_plugin
 from functools import partial
 from sublime_readline import show_input_panel_with_readline
 
+
 def cwd_for_window(window):
     """
     Return the working directory in which the window's commands should run.
@@ -27,6 +28,7 @@ def cwd_for_window(window):
                 return folder
         return os.path.dirname(active_file_name)
 
+
 def abbreviate_user(path):
     """
     Return a path with the ~ dir abbreviated (i.e. the inverse of expanduser)
@@ -37,8 +39,10 @@ def abbreviate_user(path):
     else:
         return path
 
+
 def settings():
     return sublime.load_settings('Shell Turtlestein.sublime-settings')
+
 
 def cmd_settings(cmd):
     """
@@ -56,6 +60,7 @@ def cmd_settings(cmd):
         pass
     return d
 
+
 def exec_cmd(window, cwd, cmd):
     d = cmd_settings(cmd)
 
@@ -67,6 +72,7 @@ def exec_cmd(window, cwd, cmd):
 
     window.run_command("exec", exec_args)
 
+
 def prompt_for_cmd(subcmd, window, cwd, on_done):
     if not hasattr(subcmd, 'cmd_history'):
         subcmd.cmd_history = []
@@ -77,6 +83,7 @@ def prompt_for_cmd(subcmd, window, cwd, on_done):
     for (setting, value) in settings().get('input_widget').iteritems():
         readview.settings().set(setting, value)
 
+
 # Run a command in the given directory, send input to the process. If
 # wait is True, wait for the process to finish. Return a pair indicating
 # what happened. If the first element of the pair is True, then everything
@@ -84,7 +91,6 @@ def prompt_for_cmd(subcmd, window, cwd, on_done):
 # process. If we weren't waiting or something went wrong, the first element
 # of the pair will be False. In the second case an error dialog will also
 # be displayed.
-
 def run_cmd(cwd, cmd, wait, input=""):
     shell = isinstance(cmd, basestring)
     if wait:
@@ -96,16 +102,17 @@ def run_cmd(cwd, cmd, wait, input=""):
         output, error = proc.communicate(input)
         return_code = proc.poll()
         if return_code:
-            sublime.error_message ("The following command exited with status "
-                                   + "code " + str(return_code) + ":\n" + cmd
-                                   + "\n\nOutput:\n" + output
-                                   + "\n\nError:\n" + error)
+            sublime.error_message("The following command exited with status "
+                                  + "code " + str(return_code) + ":\n" + cmd
+                                  + "\n\nOutput:\n" + output
+                                  + "\n\nError:\n" + error)
             return (False, None)
         else:
             return (True, output)
     else:
         subprocess.Popen(cmd, cwd=cwd, shell=shell)
         return (False, None)
+
 
 class ShellPromptCommand(sublime_plugin.WindowCommand):
     """
@@ -117,13 +124,15 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
         on_done = partial(exec_cmd, window, cwd)
         prompt_for_cmd(self, window, cwd, on_done)
 
+
 class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
     """
     Launch a subprocess using the window's working directory
     """
-    def run(self, cmd = None, wait = False):
+    def run(self, cmd=None, wait=False):
         cwd = cwd_for_window(self.window)
         run_cmd(cwd, cmd, wait)
+
 
 class ShellPromptFilterCommand(sublime_plugin.TextCommand):
     """
@@ -133,7 +142,7 @@ class ShellPromptFilterCommand(sublime_plugin.TextCommand):
     if something went wrong
     """
     def run(self, edit):
-        window = self.view.window ()
+        window = self.view.window()
         cwd = cwd_for_window(window)
         on_done = partial(self.on_done, edit, cwd)
         prompt_for_cmd(self, window, cwd, on_done)
