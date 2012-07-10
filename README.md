@@ -15,7 +15,7 @@ And display their output just like Sublime's build systems:
 To pipe the current file or selections to the command, prepend a pipe character
 (i.e. `|`) to the command.  To redirect a command's output to the view append an
 angle bracket (i.e. `>`) to the command.  For example, `| sort >` will sort the
-currently selected lines.
+active file or its selected lines.
 
 Snippets are available for frequently used commands.  All snippets with the
 scope name `source.shell` (`source.dosbatch` for Windows users) can be used in
