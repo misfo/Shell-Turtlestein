@@ -68,13 +68,6 @@ def parse_cmd(cmd_str):
         ).groupdict()
 
 
-# Run a command in the given directory, send input to the process. If
-# wait is True, wait for the process to finish. Return a pair indicating
-# what happened. If the first element of the pair is True, then everything
-# was ok and the second element of the pair is the standard output of the
-# process. If we weren't waiting or something went wrong, the first element
-# of the pair will be False. In the second case an error dialog will also
-# be displayed.
 def run_cmd(cwd, cmd, wait, input_str=None):
     shell = isinstance(cmd, basestring)
     if wait:
@@ -121,30 +114,35 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
         before, after = settings['surround_cmd']
         shell_cmd = before + cmd['shell_cmd'] + after
 
+        if cmd['pipe'] or cmd['redirect']:
+            view = self.window.active_view()
+            if not view:
+                sublime.error_message(
+                    "A view has to be active to pipe or redirect commands.")
+                return
+            regions = [sel for sel in view.sel() if sel.size() > 0]
+            if len(regions) == 0:
+                regions = [sublime.Region(0, view.size())]
+
+
         # We can leverage Sublime's (async) build systems unless we're
         # redirecting the output into the view. In that case, we use Popen
         # synchronously.
         if cmd['redirect']:
-            view = self.window.active_view()
-            if not view:
-                sublime.error_message("No active view to redirect output to.")
-                return
-
-            for sel in view.sel():
-                self.process_selection(view, sel, cwd, shell_cmd, cmd['pipe'])
+            for region in regions:
+                self.process_region(view, region, cwd, shell_cmd, cmd['pipe'])
         else:
             if cmd['pipe']:
                 # Since Sublime's build system don't support piping to STDIN
                 # directly, pipe the selected text via `echo`.
-                view = self.window.active_view()
-                selection_text = "".join([view.substr(s) for s in view.sel()])
-                shell_cmd = "echo %s | %s" % (pipes.quote(selection_text), shell_cmd)
+                text = "".join([view.substr(r) for r in regions])
+                shell_cmd = "echo %s | %s" % (pipes.quote(text), shell_cmd)
             exec_args = settings['exec_args']
             exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
 
             self.window.run_command("exec", exec_args)
 
-    def process_selection(self, view, selection, cwd, shell_cmd, pipe):
+    def process_region(self, view, selection, cwd, shell_cmd, pipe):
         input_str = None
         if pipe:
             input_str = view.substr(selection)

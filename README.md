@@ -12,8 +12,8 @@ And display their output just like Sublime's build systems:
 
 ![command output](https://img.skitch.com/20120207-e4wwrfr7s8tyds7rptfesxi65p.jpg)
 
-To send the current selection's text to the command's STDIN, prepend the command
-with a pipe (i.e. `|`).  To redirect a command's output to the view append an
+To pipe the current file or selections to the command, prepend a pipe character
+(i.e. `|`) to the command.  To redirect a command's output to the view append an
 angle bracket (i.e. `>`) to the command.  For example, `| sort >` will sort the
 currently selected lines.
 
