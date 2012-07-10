@@ -1,4 +1,4 @@
-import os.path, re, subprocess
+import os.path, pipes, re, subprocess
 import sublime, sublime_plugin
 from functools import partial
 from sublime_readline import show_input_panel_with_readline
@@ -116,9 +116,6 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, cwd, cmd_str):
         cmd = parse_cmd(cmd_str)
-        if cmd['pipe'] and not cmd['redirect']:
-            sublime.error_message("Build systems do not support input from STDIN")
-            return
         settings = cmd_settings(cmd['shell_cmd'])
 
         before, after = settings['surround_cmd']
@@ -136,6 +133,12 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
             for sel in view.sel():
                 self.process_selection(view, sel, cwd, shell_cmd, cmd['pipe'])
         else:
+            if cmd['pipe']:
+                # Since Sublime's build system don't support piping to STDIN
+                # directly, pipe the selected text via `echo`.
+                view = self.window.active_view()
+                selection_text = "".join([view.substr(s) for s in view.sel()])
+                shell_cmd = "echo %s | %s" % (pipes.quote(selection_text), shell_cmd)
             exec_args = settings['exec_args']
             exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
 
