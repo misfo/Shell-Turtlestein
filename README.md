@@ -33,7 +33,7 @@ Default keybindings
 
 Optional Configuration
 ----------------------
-In your own `Packages/User/Shell Turtlestein.sublime-commands` file you can
+In your own `Packages/User/Shell Turtlestein.sublime-settings` file you can
 override the following settings:
 
   * `surround_cmd`: A two-element array that specifies text to append before and
