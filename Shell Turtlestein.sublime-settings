@@ -1,6 +1,6 @@
 {
 	// Override these in your own
-	// `Packages/User/Shell Turtlestein.sublime-commands` file.
+	// `Packages/User/Shell Turtlestein.sublime-settings` file.
 	"surround_cmd": ["", ""],
 	"exec_args": {},
 	"cmd_settings": [],
