@@ -63,7 +63,7 @@ def cmd_settings(cmd):
 
 def parse_cmd(cmd_str):
     return re.match(
-            r"(?P<pipe>\s*\|\s*)?(?P<shell_cmd>.*?)(?P<redirect>\s*>\s*)?$",
+            r"(?P<pipe>\s*\|\s*)?(?P<shell_cmd>.*?)(?P<redirect_new>\s*>>\s*)?(?P<redirect>\s*>\s*)?$",
             cmd_str
         ).groupdict()
 
@@ -140,7 +140,15 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
             exec_args = settings['exec_args']
             exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
 
-            self.window.run_command("exec", exec_args)
+            if cmd['redirect_new']:
+                (success, output) = run_cmd(cwd, shell_cmd, True)
+                self.window.run_command("new_file")
+                view = self.window.active_view()
+                edit = view.begin_edit()
+                view.insert(edit, 0, output)
+                view.end_edit(edit)
+            else:
+                self.window.run_command("exec", exec_args)
 
     def process_region(self, view, selection, cwd, shell_cmd, pipe):
         input_str = None
