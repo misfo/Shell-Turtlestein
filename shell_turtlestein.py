@@ -63,7 +63,7 @@ def cmd_settings(cmd):
 
 def parse_cmd(cmd_str):
     return re.match(
-            r"(?P<pipe>\s*\|\s*)?(?P<shell_cmd>.*?)(?P<redirect_new>\s*>>\s*)?(?P<redirect>\s*>\s*)?$",
+            r"(?P<pipe>\s*\|\s*)?(?P<shell_cmd>.*?)(?:\s*(?:(?P<redirect_new>>)|(?P<redirect>\|))\s*)?$",
             cmd_str
         ).groupdict()
 
