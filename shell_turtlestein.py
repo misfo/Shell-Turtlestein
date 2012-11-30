@@ -63,7 +63,7 @@ def cmd_settings(cmd):
 
 def parse_cmd(cmd_str):
     return re.match(
-            r"(?P<pipe>\s*\|\s*)?(?P<shell_cmd>.*?)(?:\s*(?:(?P<redirect_new>>)|(?P<redirect>\|))\s*)?$",
+            r"\s*(?P<input>\|)?\s*(?P<shell_cmd>.*?)\s*(?P<output>[|>])?\s*$",
             cmd_str
         ).groupdict()
 
@@ -109,57 +109,66 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, cwd, cmd_str):
         cmd = parse_cmd(cmd_str)
+        if not cmd['input'] and cmd['output'] == '|':
+            sublime.error_message(
+                "Piping output to the view requires piping input from the view as well."
+                + " Please use a preceding |.")
+            return
+
+        active_view = self.window.active_view()
+        if cmd['input'] or cmd['output'] == '|':
+            if not active_view:
+                sublime.error_message(
+                    "A view has to be active to pipe text from and/or to a view.")
+                return
+
         settings = cmd_settings(cmd['shell_cmd'])
 
         before, after = settings['surround_cmd']
         shell_cmd = before + cmd['shell_cmd'] + after
 
-        if cmd['pipe'] or cmd['redirect']:
-            view = self.window.active_view()
-            if not view:
-                sublime.error_message(
-                    "A view has to be active to pipe or redirect commands.")
-                return
-            regions = [sel for sel in view.sel() if sel.size() > 0]
-            if len(regions) == 0:
-                regions = [sublime.Region(0, view.size())]
+        if cmd['input']:
+            input_regions = [sel for sel in active_view.sel() if sel.size() > 0]
+            if len(input_regions) == 0:
+                input_regions = [sublime.Region(0, active_view.size())]
+        else:
+            input_regions = None
 
 
         # We can leverage Sublime's (async) build systems unless we're
-        # redirecting the output into the view. In that case, we use Popen
+        # redirecting the output into a view. In that case, we use Popen
         # synchronously.
-        if cmd['redirect']:
-            for region in regions:
-                self.process_region(view, region, cwd, shell_cmd, cmd['pipe'])
+        if cmd['output']:
+            for region in (input_regions or [None]):
+                self.process_region(active_view, region, cwd, shell_cmd, cmd['output'])
         else:
-            if cmd['pipe']:
+            if input_regions:
                 # Since Sublime's build system don't support piping to STDIN
                 # directly, pipe the selected text via `echo`.
-                text = "".join([view.substr(r) for r in regions])
+                text = "".join([active_view.substr(r) for r in input_regions])
                 shell_cmd = "echo %s | %s" % (pipes.quote(text), shell_cmd)
             exec_args = settings['exec_args']
             exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
 
-            if cmd['redirect_new']:
-                (success, output) = run_cmd(cwd, shell_cmd, True)
-                self.window.run_command("new_file")
-                view = self.window.active_view()
-                edit = view.begin_edit()
-                view.insert(edit, 0, output)
-                view.end_edit(edit)
-            else:
-                self.window.run_command("exec", exec_args)
+            self.window.run_command("exec", exec_args)
 
-    def process_region(self, view, selection, cwd, shell_cmd, pipe):
+    def process_region(self, active_view, selection, cwd, shell_cmd, outpt):
         input_str = None
-        if pipe:
-            input_str = view.substr(selection)
+        if selection:
+            input_str = active_view.substr(selection)
 
         (success, output) = run_cmd(cwd, shell_cmd, True, input_str)
         if success:
-            edit = view.begin_edit()
-            view.replace(edit, selection, output)
-            view.end_edit(edit)
+            if outpt == '|':
+                edit = active_view.begin_edit()
+                active_view.replace(edit, selection, output)
+                active_view.end_edit(edit)
+            elif outpt == '>':
+                self.window.run_command("new_file")
+                new_view = self.window.active_view()
+                edit = new_view.begin_edit()
+                new_view.insert(edit, 0, output)
+                new_view.end_edit(edit)
 
 
 class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
