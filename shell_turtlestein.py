@@ -1,4 +1,4 @@
-import os.path, pipes, re, subprocess
+import os.path, pipes, re, subprocess, tempfile
 import sublime, sublime_plugin
 from functools import partial
 from sublime_readline import show_input_panel_with_readline
@@ -143,10 +143,12 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
                 self.process_region(active_view, region, cwd, shell_cmd, cmd['output'])
         else:
             if input_regions:
-                # Since Sublime's build system don't support piping to STDIN
-                # directly, pipe the selected text via `echo`.
+                # Since Sublime's build system doesn't support piping to STDIN
+                # directly, use a tempfile.
                 text = "".join([active_view.substr(r) for r in input_regions])
-                shell_cmd = "echo %s | %s" % (pipes.quote(text), shell_cmd)
+                temp = tempfile.NamedTemporaryFile()
+                temp.write(text.encode('utf8'))
+                shell_cmd = "%s < %s" % (shell_cmd, pipes.quote(temp.name))
             exec_args = settings['exec_args']
             exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
 
