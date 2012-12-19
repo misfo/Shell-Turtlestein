@@ -146,7 +146,7 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
                 # Since Sublime's build system doesn't support piping to STDIN
                 # directly, use a tempfile.
                 text = "".join([active_view.substr(r) for r in input_regions])
-                temp = tempfile.NamedTemporaryFile()
+                temp = tempfile.NamedTemporaryFile(delete=False)
                 temp.write(text.encode('utf8'))
                 shell_cmd = "%s < %s" % (shell_cmd, pipes.quote(temp.name))
             exec_args = settings['exec_args']
