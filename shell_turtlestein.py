@@ -76,7 +76,8 @@ def run_cmd(cwd, cmd, wait, input_str=None):
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      stdin=(subprocess.PIPE if input_str else None))
-        output, error = proc.communicate(input_str.encode('utf8'))
+        encoded_input = None if input_str == None else input_str.encode('utf8')
+        output, error = proc.communicate(encoded_input)
         return_code = proc.poll()
         if return_code:
             sublime.error_message("The following command exited with status "
