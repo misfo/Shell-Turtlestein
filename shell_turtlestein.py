@@ -169,7 +169,7 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
             elif outpt == '>':
                 self.window.run_command("new_file")
                 new_view = self.window.active_view()
-                new_view.set_name(re.sub(r"[<>:\"/\\|?*]", " ", shell_cmd).strip())
+                new_view.set_name(shell_cmd.strip())
                 edit = new_view.begin_edit()
                 new_view.insert(edit, 0, output)
                 new_view.end_edit(edit)
