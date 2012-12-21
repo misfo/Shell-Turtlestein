@@ -76,3 +76,10 @@ A: He was a pet turtle that died in some episode of Modern Family.  That's about
 Q: What does "PAQ" stand for?
 
 A: Possibly asked questions
+
+
+Thanks!
+-------
+Thanks to all the
+[contributors](https://github.com/misfo/Shell-Turtlestein/graphs/contributors).
+I'd give you all high fives if my arm would fit though the internet.
