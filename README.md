@@ -16,7 +16,7 @@ And display their output just like Sublime's build systems:
 Input and output
 ------------------------
 Unix's familiar `|` and `>` operators can be used to pipe/redirect a command's
-input and outout:
+input and output:
 
   * To pipe the active view's selections to a command, add a leading pipe
     character (e.g. `|sort`).  If there are no non-empty selections the entire
