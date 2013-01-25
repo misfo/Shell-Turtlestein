@@ -19,12 +19,12 @@ Unix's familiar `|` and `>` operators can be used to pipe/redirect a command's
 input and output:
 
   * To pipe the active view's selections to a command, add a leading pipe
-    character (e.g. `|sort`).  If there are no non-empty selections the entire
+    character (e.g. `| sort`).  If there are no non-empty selections the entire
     file will be piped to the command.
   * To pipe a command's output back into the view, add a trailing pipe
-    character (e.g. `|sort|`).
+    character (e.g. `| sort |`).
   * To redirect the command's output to a new file, add a trailing greater than
-    symbol to the command (e.g `ls>` or `|sort>`).
+    symbol to the command (e.g `ls >` or `| sort >`).
 
 
 Using snippets
@@ -82,4 +82,4 @@ Thanks!
 -------
 Thanks to all the
 [contributors](https://github.com/misfo/Shell-Turtlestein/graphs/contributors).
-I'd give you all high fives if my arm would fit though the internet.
+I'd give you all high fives if my arm would fit through the internet.
