@@ -80,16 +80,23 @@ def run_cmd(cwd, cmd, wait, input_str=None):
         output, error = proc.communicate(encoded_input)
         return_code = proc.poll()
         if return_code:
-            sublime.error_message("The following command exited with status "
-                                  + "code " + str(return_code) + ":\n" + cmd
-                                  + "\n\nOutput:\n" + output
-                                  + "\n\nError:\n" + error)
+            show_in_output_panel("`%s` exited with a status code of %s\n\n%s"
+                                 % (cmd, return_code, error))
             return (False, None)
         else:
             return (True, output.decode('utf8'))
     else:
         subprocess.Popen(cmd, cwd=cwd, shell=shell)
         return (False, None)
+
+def show_in_output_panel(message):
+    window = sublime.active_window()
+    panel_name = 'shell_turtlestein'
+    panel = window.get_output_panel(panel_name)
+    edit = panel.begin_edit()
+    panel.insert(edit, 0, message)
+    panel.end_edit(edit)
+    window.run_command('show_panel', {'panel': 'output.' + panel_name})
 
 
 class ShellPromptCommand(sublime_plugin.WindowCommand):
