@@ -49,7 +49,7 @@ def cmd_settings(cmd):
     Return the default settings with settings for the command merged in
     """
     d = {}
-    for setting in ['exec_args', 'surround_cmd', 'encoding']:
+    for setting in ['exec_args', 'surround_cmd']:
         d[setting] = settings().get(setting)
     try:
         settings_for_cmd = (c for c
@@ -159,8 +159,6 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
                 shell_cmd = "%s < %s" % (shell_cmd, pipes.quote(temp.name))
             exec_args = settings['exec_args']
             exec_args.update({'cmd': shell_cmd, 'shell': True, 'working_dir': cwd})
-            if settings['encoding']:
-                exec_args.update({'encoding': settings['encoding']})
 
             self.window.run_command("exec", exec_args)
 
