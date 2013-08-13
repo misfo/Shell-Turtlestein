@@ -1,6 +1,10 @@
 import os.path, pipes, re, subprocess, tempfile
 import sublime, sublime_plugin
 from functools import partial
+
+import sys
+sys.path.append(os.path.dirname(__file__))
+
 from sublime_readline import show_input_panel_with_readline
 
 
@@ -52,9 +56,9 @@ def cmd_settings(cmd):
     for setting in ['exec_args', 'surround_cmd']:
         d[setting] = settings().get(setting)
     try:
-        settings_for_cmd = (c for c
+        settings_for_cmd = next((c for c
                             in settings().get('cmd_settings')
-                            if re.search(c['cmd_regex'], cmd)).next()
+                            if re.search(c['cmd_regex'], cmd)))
         d.update(settings_for_cmd)
     except StopIteration:
         pass
@@ -112,7 +116,7 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
                                                    abbreviate_user(cwd) + " $",
                                                    self.cmd_history,
                                                    on_done, None, None)
-        for (setting, value) in settings().get('input_widget').iteritems():
+        for (setting, value) in settings().get('input_widget').items():
             inputview.settings().set(setting, value)
 
     def on_done(self, cwd, cmd_str):
