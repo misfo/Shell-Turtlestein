@@ -73,7 +73,7 @@ def parse_cmd(cmd_str):
 
 
 def run_cmd(cwd, cmd, wait, input_str=None):
-    shell = isinstance(cmd, basestring)
+    shell = isinstance(cmd, str)
     if wait:
         proc = subprocess.Popen(cmd, cwd=cwd,
                                      shell=shell,
@@ -116,7 +116,7 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
                                                    abbreviate_user(cwd) + " $",
                                                    self.cmd_history,
                                                    on_done, None, None)
-        for (setting, value) in settings().get('input_widget').items():
+        for (setting, value) in list(settings().get('input_widget').items()):
             inputview.settings().set(setting, value)
 
     def on_done(self, cwd, cmd_str):

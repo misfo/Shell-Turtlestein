@@ -17,7 +17,7 @@ def show_input_panel_with_readline(window, caption, cmd_history,
                                    on_done, on_change, on_cancel):
     global active_input_row
     active_input_row = -1
-    view = window.show_input_panel(caption, u"\n".join(cmd_history) + u"\n",
+    view = window.show_input_panel(caption, "\n".join(cmd_history) + "\n",
                                    partial(callback_with_history, on_done, cmd_history),
                                    on_change, on_cancel)
     view.settings().set('readline_input_widget', True)
