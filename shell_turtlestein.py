@@ -174,17 +174,25 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
         (success, output) = run_cmd(cwd, shell_cmd, True, input_str)
         if success:
             if outpt == '|':
-                edit = active_view.begin_edit()
-                active_view.replace(edit, selection, output)
-                active_view.end_edit(edit)
+                active_view.run_command("replace_with_text", {'region_start': selection.a,
+                                                              'region_end': selection.b,
+                                                              'text': output})
             elif outpt == '>':
                 self.window.run_command("new_file")
                 new_view = self.window.active_view()
                 new_view.set_name(shell_cmd.strip())
-                edit = new_view.begin_edit()
-                new_view.insert(edit, 0, output)
-                new_view.end_edit(edit)
+                new_view.run_command("replace_with_text", {'text': output})
 
+
+class ReplaceWithTextCommand(sublime_plugin.TextCommand):
+    """
+    Replace the text in the specified region with the specified text
+    """
+    def run(self, edit, region_start=None, region_end=None, text=None):
+        if region_start and region_end:
+            self.view.replace(edit, sublime.Region(region_start, region_end), text)
+        else:
+            self.view.insert(edit, 0, text)
 
 class SubprocessInCwdCommand(sublime_plugin.WindowCommand):
     """
