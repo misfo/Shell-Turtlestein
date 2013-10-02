@@ -25,7 +25,7 @@ def show_input_panel_with_readline(window, caption, cmd_history,
     return view
 
 class ReadlineHistoryChange(sublime_plugin.TextCommand):
-    def run_(self, args):
+    def run_(self, someIntNotUsed, args):
         # Override default run_ so that an edit isn't created.
         if 'event' in args:
             del args['event']
