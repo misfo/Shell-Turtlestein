@@ -1,7 +1,7 @@
 Shell Turtlestein
 =================
 
-A quick and simple way to run arbitrary shell commands in Sublime Text 2.
+A quick and simple way to run arbitrary shell commands in Sublime Text.
 
 Mr. Turtlestein acts as a more flexible alternative to Sublime's build systems.
 Commands run in your project's directory:
