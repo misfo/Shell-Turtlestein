@@ -97,12 +97,14 @@ def show_in_output_panel(message):
     panel.end_edit(edit)
     window.run_command('show_panel', {'panel': 'output.' + panel_name})
 
+def run_previous_command(args, cmd_str):
+    return args is not None and args["run_previous"] and cmd_str is not None
 
 class ShellPromptCommand(sublime_plugin.WindowCommand):
     """
     Prompt the user for a shell command to run in the window's directory
     """
-    def run(self):
+    def run(self, **args):
         if not hasattr(self, 'cmd_history'):
             self.cmd_history = []
         cwd = cwd_for_window(self.window)
@@ -113,6 +115,8 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
                                                    on_done, None, None)
         for (setting, value) in list(settings().get('input_widget').items()):
             inputview.settings().set(setting, value)
+        if run_previous_command(args, self.cmd_history[-1]):
+            self.on_done(cwd, self.cmd_history[-1])
 
     def on_done(self, cwd, cmd_str):
         cmd = parse_cmd(cmd_str)
