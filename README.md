@@ -41,6 +41,7 @@ Default keybindings
 * Ctrl + Shift + C (Cmd + Shift + C): prompt for a shell command
 * Ctrl + Alt + Shift + C (Cmd + Alt + Shift + C): launch a terminal in the
   window's directory
+* Ctrl + Shift + X (Cmd + Shift + X): re-run the previous command
 
 
 Optional Configuration
