@@ -105,12 +105,12 @@ class ShellPromptCommand(sublime_plugin.WindowCommand):
         if not hasattr(self, 'cmd_history'):
             self.cmd_history = []
         cwd = cwd_for_window(self.window)
-        on_done = partial(self.on_done, cwd)
         args.setdefault("run_previous", False)
 
         if len(self.cmd_history) > 0 and args["run_previous"]:
             self.on_done(cwd, self.cmd_history[-1])
         else:
+            on_done = partial(self.on_done, cwd)
             inputview = show_input_panel_with_readline(self.window,
                                                        abbreviate_user(cwd) + " $",
                                                        self.cmd_history,
