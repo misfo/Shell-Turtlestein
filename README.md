@@ -65,6 +65,7 @@ override the following settings:
   	  for this configuration to be used.
   	* `exec_args` and `surround_cmd` override the settings described above for
       any matching command.
+  * `always_current_dir`: If set to true, always gets current dir of active file.
 
 
 PAQ

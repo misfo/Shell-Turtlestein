@@ -15,6 +15,13 @@ def cwd_for_window(window):
         3) The user's home directory.
     """
     folders = window.folders()
+
+    if settings().get('always_current_dir') == True:
+        active_view = window.active_view()
+        active_file_name = active_view.file_name() if active_view else None
+        if active_file_name:
+            return os.path.dirname(active_file_name)
+
     if len(folders) == 1:
         return folders[0]
     else:
