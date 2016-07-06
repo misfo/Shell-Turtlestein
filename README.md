@@ -65,7 +65,8 @@ override the following settings:
   	  for this configuration to be used.
   	* `exec_args` and `surround_cmd` override the settings described above for
       any matching command.
-  * `always_current_dir`: If set to true, always gets current dir of active file.
+  * `prefer_active_view_dir`: If set to true, prefer using the directory of
+    active file over using a folder open in the current project.
 
 
 PAQ

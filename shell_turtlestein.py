@@ -13,35 +13,43 @@ def cwd_for_window(window):
            file.
         2) The directory containing the active file.
         3) The user's home directory.
+
+    If `prefer_active_view_dir` is set to True, 2 will be preferred over 1.
     """
+    active_view = window.active_view()
+    active_file = active_view.file_name() if active_view else None
+    if settings().get('prefer_active_view_dir') == True:
+        return active_view_dir(active_file) or open_folder(window, active_file) or home_dir()
+    else:
+        return open_folder(window, active_file) or active_view_dir(active_file) or home_dir()
+
+def open_folder(window, active_file_name):
     folders = window.folders()
-
-    if settings().get('always_current_dir') == True:
-        active_view = window.active_view()
-        active_file_name = active_view.file_name() if active_view else None
-        if active_file_name:
-            return os.path.dirname(active_file_name)
-
     if len(folders) == 1:
         return folders[0]
-    else:
-        active_view = window.active_view()
-        active_file_name = active_view.file_name() if active_view else None
-        if not active_file_name:
-            return folders[0] if len(folders) else os.path.expanduser("~")
-        for folder in folders:
-            if active_file_name.startswith(folder):
-                return folder
+
+    if not active_file_name:
+        return folders[0] if len(folders) else None
+
+    for folder in folders:
+        if active_file_name.startswith(folder):
+            return folder
+
+def active_view_dir(active_file_name):
+    if active_file_name:
         return os.path.dirname(active_file_name)
+
+def home_dir():
+    return os.path.expanduser("~")
 
 
 def abbreviate_user(path):
     """
     Return a path with the ~ dir abbreviated (i.e. the inverse of expanduser)
     """
-    home_dir = os.path.expanduser("~")
-    if path.startswith(home_dir):
-        return "~" + path[len(home_dir):]
+    home = home_dir()
+    if path.startswith(home):
+        return "~" + path[len(home):]
     else:
         return path
 
